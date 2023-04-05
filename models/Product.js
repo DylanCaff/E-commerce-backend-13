@@ -15,7 +15,7 @@ Product.init({
   },
   product_name: {
     type: DataTypes.STRING,
-    autoIncrement: true
+    autoIncrement: false,
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),

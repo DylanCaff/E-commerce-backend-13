@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
   try {
     const productData = await Product.findAll({
       // be sure to include its associated Category and Tag data
-      include: [{ model: Category}, {model: tag}],
+      include: [ Category, {model: Tag, through: ProductTag}],
     });
     res.status(200).json(productData);
     console.log('Find All Success');
@@ -23,7 +23,7 @@ router.get('/:id', async (req, res) => {
   // find a single product by its `id`
   try {
     const productData = await Product.findByPk(req.params.id, {
-      include: [{ model: Category}, {model: tag}],
+      include: [ Category, {model: Tag, through: ProductTag}],
     });
     res.status(200).json(productData);
     console.log('Find All Success');
@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
   Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
-      if (req.body.tagIds.length) {
+      if (req.body.tagIds && req.body.tagIds.length) {
         const productTagIdArr = req.body.tagIds.map((tag_id) => {
           return {
             product_id: product.id,
@@ -109,6 +109,14 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   // delete one product by its `id` value
+  Product.destroy ({where: {id: req.params.id}})
+  .then((products) => {
+    res.json(products)
+  })
+  .catch((err) => {
+    // console.log(err);
+    res.status(400).json(err);
+  });
 });
 
 
